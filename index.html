@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VI // Countdown</title>
+<style>
+  :root{
+    --hot-pink:#ff2fa0;
+    --cyan:#28e8ea;
+    --deep:#160a26;
+    --deep2:#2a0f3d;
+    --sun:#ffb545;
+    --ink:#f4eefc;
+    --dim:#b79fd1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Trebuchet MS',ui-sans-serif,system-ui,sans-serif;
+    background:linear-gradient(180deg,var(--deep) 0%,var(--deep2) 45%,#3d1240 75%,#5c1740 100%);
+    color:var(--ink);
+    min-height:100%;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  .scene{
+    position:relative;
+    height:min(70vh,640px);
+    min-height:420px;
+    overflow:hidden;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+  }
+  .sun{
+    position:absolute;
+    top:12%;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(46vw,320px);
+    height:min(46vw,320px);
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 45%,var(--sun),var(--hot-pink) 70%,transparent 72%);
+    filter:blur(1px);
+    box-shadow:0 0 90px 10px rgba(255,120,180,.35);
+  }
+  .sun::after{
+    content:"";
+    position:absolute;inset:0;
+    background:repeating-linear-gradient(0deg,transparent 0 6px,var(--deep2) 6px 10px);
+    -webkit-mask:radial-gradient(circle,#000 60%,transparent 61%);
+    mask:radial-gradient(circle,#000 60%,transparent 61%);
+    top:52%;
+  }
+  .grid{
+    position:absolute;
+    left:0;right:0;bottom:0;
+    height:40%;
+    background-image:
+      linear-gradient(rgba(40,232,234,.5) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(40,232,234,.5) 1px,transparent 1px);
+    background-size:48px 32px;
+    transform:perspective(300px) rotateX(55deg);
+    transform-origin:bottom;
+    opacity:.55;
+  }
+  .skyline{
+    position:absolute;
+    left:0;right:0;bottom:0;
+    height:46%;
+    display:flex;
+    align-items:flex-end;
+    gap:6px;
+    padding:0 4%;
+    filter:drop-shadow(0 0 18px rgba(255,47,160,.25));
+  }
+  .bldg{background:#1b0c2c;flex:0 0 auto;border-top:2px solid rgba(40,232,234,.6);}
+  .hero-copy{
+    position:absolute;
+    top:8%;
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    width:100%;
+    padding:0 20px;
+  }
+  .kicker{
+    font-size:.85rem;
+    letter-spacing:.14em;
+    color:var(--cyan);
+  }
+  h1{
+    font-size:clamp(3rem,13vw,7.5rem);
+    line-height:.9;
+    background:linear-gradient(180deg,#fff,var(--sun) 55%,var(--hot-pink));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    letter-spacing:.02em;
+    margin-top:6px;
+  }
+  .tagline{
+    margin-top:10px;
+    color:var(--dim);
+    font-size:1.05rem;
+    max-width:520px;
+    margin-left:auto;margin-right:auto;
+  }
+
+  main{
+    max-width:900px;
+    margin:0 auto;
+    padding:0 20px 80px;
+  }
+
+  .countdown{
+    margin-top:-40px;
+    position:relative;
+    z-index:2;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    background:rgba(20,8,34,.7);
+    border:1px solid rgba(255,47,160,.35);
+    border-radius:14px;
+    padding:22px 16px;
+    backdrop-filter:blur(6px);
+  }
+  .unit{text-align:center;}
+  .unit .num{
+    font-size:clamp(1.8rem,6vw,3rem);
+    font-weight:700;
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  .unit .label{
+    font-size:.7rem;
+    color:var(--dim);
+    margin-top:4px;
+  }
+  .release-note{
+    text-align:center;
+    color:var(--dim);
+    font-size:.85rem;
+    margin-top:12px;
+  }
+
+  section{margin-top:56px;}
+  h2{
+    font-size:1.4rem;
+    color:var(--cyan);
+    margin-bottom:10px;
+  }
+  p{color:var(--dim);line-height:1.55;}
+
+  .card{
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:12px;
+    padding:18px 20px;
+  }
+
+  .stat-row{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-top:14px;
+  }
+  .stat{
+    flex:1 1 140px;
+    background:rgba(40,232,234,.06);
+    border:1px solid rgba(40,232,234,.25);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .stat .n{font-size:1.6rem;font-weight:700;color:var(--sun);font-variant-numeric:tabular-nums;}
+  .stat .l{font-size:.72rem;color:var(--dim);margin-top:2px;}
+
+  .links{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:14px;
+  }
+  .links a{
+    color:var(--ink);
+    text-decoration:none;
+    border:1px solid rgba(255,47,160,.4);
+    padding:10px 16px;
+    border-radius:8px;
+    font-size:.9rem;
+    background:rgba(255,47,160,.08);
+    transition:background .15s ease;
+  }
+  .links a:hover{background:rgba(255,47,160,.2);}
+  .links a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+
+  footer{
+    text-align:center;
+    padding:40px 20px 60px;
+    color:var(--dim);
+    font-size:.85rem;
+  }
+  footer a{
+    color:var(--cyan);
+    text-decoration:none;
+    border-bottom:1px solid rgba(40,232,234,.4);
+  }
+
+  @media (prefers-reduced-motion:no-preference){
+    .sun{animation:rise 6s ease-out;}
+    @keyframes rise{from{transform:translateX(-50%) translateY(30px);opacity:0;}to{transform:translateX(-50%) translateY(0);opacity:1;}}
+  }
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="grid"></div>
+  <div class="sun"></div>
+  <div class="skyline" id="skyline"></div>
+  <div class="hero-copy">
+    <div class="kicker">GRAND THEFT AUTO</div>
+    <h1>VI</h1>
+    <p class="tagline">An unofficial fan countdown to launch day. Not affiliated with, endorsed by, or connected to Rockstar Games or Take-Two Interactive.</p>
+  </div>
+</div>
+
+<main>
+  <div class="countdown" id="countdown" aria-live="polite">
+    <div class="unit"><div class="num" id="d">--</div><div class="label">days</div></div>
+    <div class="unit"><div class="num" id="h">--</div><div class="label">hours</div></div>
+    <div class="unit"><div class="num" id="m">--</div><div class="label">minutes</div></div>
+    <div class="unit"><div class="num" id="s">--</div><div class="label">seconds</div></div>
+  </div>
+  <div class="release-note">Targeting November 19, 2026 — the date Rockstar Games has confirmed publicly. Subject to change.</div>
+
+  <section>
+    <h2>Site activity</h2>
+    <div class="card">
+      <p>This page counts visits on your own device only — it has no server, so it can't see traffic from other visitors or report to anyone. Real analytics (unique users, referrers, geography) needs a proper service like Google Analytics or Plausible wired up to a live site, which is outside what a page like this can do on its own.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n" id="visits">1</div><div class="l">your visits to this page</div></div>
+        <div class="stat"><div class="n" id="firstseen">today</div><div class="l">first seen</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Rockstar Games &amp; Take-Two</h2>
+    <div class="card">
+      <p>I can't hook this page up to Rockstar's or Take-Two's actual systems — their APIs, wishlist data, and store services are private and not something I have access to. What I can do is link straight to their official sites for the real thing:</p>
+      <div class="links">
+        <a href="https://www.rockstargames.com/VI" target="_blank" rel="noopener">Rockstar Games — GTA VI</a>
+        <a href="https://www.take2games.com" target="_blank" rel="noopener">Take-Two Interactive</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Watch: <a href="https://www.youtube.com/watch?v=tJbzMqJGH4k&t=725s" target="_blank" rel="noopener">youtube.com/watch?v=tJbzMqJGH4k</a></p>
+</footer>
+
+<script>
+  (function(){
+    var sky = document.getElementById('skyline');
+    var n = 22;
+    for(var i=0;i<n;i++){
+      var b = document.createElement('div');
+      b.className = 'bldg';
+      var w = 18 + Math.random()*30;
+      var h = 30 + Math.random()*100;
+      b.style.width = w+'px';
+      b.style.height = h+'%';
+      sky.appendChild(b);
+    }
+  })();
+
+  var target = new Date('2026-11-19T00:00:00Z').getTime();
+  function tick(){
+    var now = Date.now();
+    var diff = Math.max(0, target - now);
+    var d = Math.floor(diff/86400000);
+    var h = Math.floor(diff/3600000)%24;
+    var m = Math.floor(diff/60000)%60;
+    var s = Math.floor(diff/1000)%60;
+    document.getElementById('d').textContent = d;
+    document.getElementById('h').textContent = String(h).padStart(2,'0');
+    document.getElementById('m').textContent = String(m).padStart(2,'0');
+    document.getElementById('s').textContent = String(s).padStart(2,'0');
+    if(diff<=0){
+      document.querySelector('.release-note').textContent = "It's launch day (per the announced date).";
+    }
+  }
+  tick();
+  setInterval(tick,1000);
+
+  try{
+    var visits = parseInt(localStorage.getItem('gta6_visits')||'0',10) + 1;
+    localStorage.setItem('gta6_visits', String(visits));
+    document.getElementById('visits').textContent = visits;
+
+    var first = localStorage.getItem('gta6_first_seen');
+    if(!first){
+      first = new Date().toISOString().slice(0,10);
+      localStorage.setItem('gta6_first_seen', first);
+    }
+    document.getElementById('firstseen').textContent = first;
+  }catch(e){
+    document.getElementById('visits').textContent = '—';
+    document.getElementById('firstseen').textContent = '—';
+  }
+</script>
+</body>
+</html>
